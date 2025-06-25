@@ -84,8 +84,17 @@ class AuthController {
     }
     
     private function loadView($view, $data = []) {
-        extract($data);
-        require_once __DIR__ . '/../views/' . $view . '.php';
+    extract($data);
+    
+    // Adiciona uma verificação para o caminho da view de login, que está em um subdiretório
+    $path = __DIR__ . '/../views/';
+    if ($view === 'login') {
+        $path .= 'layout/' . $view . '.php';
+    } else {
+        $path .= $view . '.php';
     }
+    
+    require_once $path;
+}
 }
 ?>

@@ -31,8 +31,10 @@ class User {
             $row = $result->fetch_assoc();
             return $row['id'];
         } else {
-            $stmt = $this->conn->prepare("INSERT INTO usuarios (nome, email, senha, session_id) VALUES ('', '', '', ?)");
-            $stmt->bind_param("s", $session_id);
+            // Para evitar o erro de 'Duplicate entry', usamos o session_id (que é único)
+            // como um valor de placeholder para o email do usuário anônimo.
+            $stmt = $this->conn->prepare("INSERT INTO usuarios (nome, email, senha, session_id) VALUES ('', ?, '', ?)");
+            $stmt->bind_param("ss", $session_id, $session_id);
             $stmt->execute();
             return $this->conn->insert_id;
         }
