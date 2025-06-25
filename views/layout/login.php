@@ -11,7 +11,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <img src="./imgs/Tecny-removebg-preview.png" alt="Tecny Geek Store" class="auth-logo">
+                <img src="./imgs/Tecny__1_-removebg-preview.png" alt="Tecny Geek Store" class="auth-logo">
                 <h1>Fazer Login</h1>
             </div>
             

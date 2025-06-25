@@ -25,7 +25,7 @@ class AuthController {
                     $_SESSION['logged_in'] = true;
                     
                     if ($user['tipo'] === 'admin') {
-                        header('Location: admin.php');
+                        header('Location: index.php');
                     } else {
                         header('Location: index.php');
                     }
