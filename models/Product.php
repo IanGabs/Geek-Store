@@ -5,8 +5,7 @@ class Product {
     private $conn;
     
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
     
     public function getAllProducts() {

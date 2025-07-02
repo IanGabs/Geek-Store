@@ -7,8 +7,7 @@ class Cart {
     private $user;
     
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
         $this->user = new User();
     }
     

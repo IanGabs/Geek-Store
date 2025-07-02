@@ -5,17 +5,14 @@ class User {
     private $conn;
     
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
     
     public function getUserId() {
-        // Se o usuário está logado, usa o ID da sessão de login
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             return $_SESSION['user_id'];
         }
         
-        // Caso contrário, usa o sistema de sessão anônima para o carrinho
         if (!isset($_SESSION['session_id'])) {
             $_SESSION['session_id'] = session_id();
         }
@@ -31,8 +28,6 @@ class User {
             $row = $result->fetch_assoc();
             return $row['id'];
         } else {
-            // Para evitar o erro de 'Duplicate entry', usamos o session_id (que é único)
-            // como um valor de placeholder para o email do usuário anônimo.
             $stmt = $this->conn->prepare("INSERT INTO usuarios (nome, email, senha, session_id) VALUES ('', ?, '', ?)");
             $stmt->bind_param("ss", $session_id, $session_id);
             $stmt->execute();
@@ -57,7 +52,6 @@ class User {
     }
     
     public function createUser($nome, $email, $senha) {
-        // Verifica se o email já existe
         $stmt = $this->conn->prepare("SELECT id FROM usuarios WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
