@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
 require_once __DIR__ . '/../models/Cart.php';
+require_once __DIR__ . '/../adapters/JsonExporter.php';
+require_once __DIR__ . '/../adapters/CsvConverter.php';
+require_once __DIR__ . '/../adapters/CsvAdapter.php';
 
 class AdminController {
     private $productModel;
@@ -67,6 +70,39 @@ class AdminController {
     private function loadView($view, $data = []) {
         extract($data);
         require_once __DIR__ . '/../views/' . $view . '.php';
+    }
+
+    public function exportProducts($format)
+    {
+        $products = $this -> productModel -> getAllProducts();
+        $exporter = null;
+
+        switch($format)
+        {
+            case 'csv':
+                $adaptee = new CsvConverter();
+                $exporter = new CsvAdapter($adaptee);
+                $contentType = 'text/csv';
+                $fileName = 'produtos.csv';
+                break;
+            
+            case 'json':
+                default:
+                $exporter = new JsonExporter();
+                $contentType = 'application/json';
+                $fileName = 'produtos.json';
+                break;
+        }
+
+        $data = $exporter -> export($products);
+
+        header('Content-Type: ' . $contentType);
+        header('Content-Disposition: attachment; filename = "' . $fileName . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        echo $data;
+        exit;
     }
 }
 ?>
