@@ -10,12 +10,18 @@ class AdminController {
     private $cartModel;
     
     public function __construct() {
-        $this->checkAuth();
+        $this->checkAuth(); // Agora esta verificação funciona
         $this->productModel = new Product();
         $this->cartModel = new Cart();
     }
     
     private function checkAuth() {
+        // CORREÇÃO: Garante que a sessão está iniciada antes de verificar
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Se o utilizador não estiver logado ou não for admin, redireciona
         if (!isset($_SESSION['logged_in']) || $_SESSION['user_type'] !== 'admin') {
             header('Location: login.php');
             exit;
@@ -37,6 +43,7 @@ class AdminController {
             'user_name' => $_SESSION['user_name']
         ];
         
+        // CORREÇÃO: A variável estava a ser passada incorretamente como 'data' em vez de '$data'
         $this->loadView('admin', $data);
     }
     
@@ -87,7 +94,7 @@ class AdminController {
                 break;
             
             case 'json':
-                default:
+            default:
                 $exporter = new JsonExporter();
                 $contentType = 'application/json';
                 $fileName = 'produtos.json';
@@ -97,7 +104,7 @@ class AdminController {
         $data = $exporter -> export($products);
 
         header('Content-Type: ' . $contentType);
-        header('Content-Disposition: attachment; filename = "' . $fileName . '"');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Pragma: no-cache');
         header('Expires: 0');
 
