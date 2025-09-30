@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/DataExporter.php';
-require_once __DIR__ . '/CsvConverter.php';
-
 class CsvAdapter implements DataExporter
 {
     private $csvConverter;

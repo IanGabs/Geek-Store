@@ -24,8 +24,9 @@ class AuthController {
                     $_SESSION['user_type'] = $user['tipo'];
                     $_SESSION['logged_in'] = true;
                     
+                    // CORREÇÃO: Redireciona admin para admin.php
                     if ($user['tipo'] === 'admin') {
-                        header('Location: index.php');
+                        header('Location: admin.php');
                     } else {
                         header('Location: index.php');
                     }
@@ -84,17 +85,17 @@ class AuthController {
     }
     
     private function loadView($view, $data = []) {
-    extract($data);
-    
-    // Adiciona uma verificação para o caminho da view de login, que está em um subdiretório
-    $path = __DIR__ . '/../views/';
-    if ($view === 'login') {
-        $path .= 'layout/' . $view . '.php';
-    } else {
-        $path .= $view . '.php';
+        extract($data);
+        
+        // Adiciona uma verificação para o caminho da view de login, que está em um subdiretório
+        $path = __DIR__ . '/../views/';
+        if ($view === 'login') {
+            $path .= 'layout/' . $view . '.php';
+        } else {
+            $path .= $view . '.php';
+        }
+        
+        require_once $path;
     }
-    
-    require_once $path;
-}
 }
 ?>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
 require_once __DIR__ . '/../models/Cart.php';
+require_once __DIR__ . '/../adapters/DataExporter.php';
 require_once __DIR__ . '/../adapters/JsonExporter.php';
 require_once __DIR__ . '/../adapters/CsvConverter.php';
 require_once __DIR__ . '/../adapters/CsvAdapter.php';
@@ -10,13 +11,13 @@ class AdminController {
     private $cartModel;
     
     public function __construct() {
-        $this->checkAuth(); // Agora esta verificação funciona
+        $this->checkAuth();
         $this->productModel = new Product();
         $this->cartModel = new Cart();
     }
     
     private function checkAuth() {
-        // CORREÇÃO: Garante que a sessão está iniciada antes de verificar
+        // Garante que a sessão está iniciada antes de verificar
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -43,7 +44,6 @@ class AdminController {
             'user_name' => $_SESSION['user_name']
         ];
         
-        // CORREÇÃO: A variável estava a ser passada incorretamente como 'data' em vez de '$data'
         $this->loadView('admin', $data);
     }
     
@@ -81,7 +81,7 @@ class AdminController {
 
     public function exportProducts($format)
     {
-        $products = $this -> productModel -> getAllProducts();
+        $products = $this->productModel->getAllProducts();
         $exporter = null;
 
         switch($format)
@@ -101,7 +101,7 @@ class AdminController {
                 break;
         }
 
-        $data = $exporter -> export($products);
+        $data = $exporter->export($products);
 
         header('Content-Type: ' . $contentType);
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
