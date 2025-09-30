@@ -32,7 +32,7 @@
             <div class="resumo-carrinho">
                 <h2>Resumo do Pedido</h2>
                 <p>Total: R$ <?php echo number_format($total, 2, ',', '.'); ?></p>
-                <a href="finalizar-compra.php" class="btn-primary">Finalizar Compra</a>
+                <a href="#" class="btn-primary" onclick="alert('Funcionalidade de finalizar compra em desenvolvimento!'); return false;">Finalizar Compra</a>
             </div>
         <?php endif; ?>
     </section>

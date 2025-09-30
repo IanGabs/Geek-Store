@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function atualizarContador() {
         try {
-            const response = await fetch('/api/carrinho.php');
+            const response = await fetch('./api/carrinho.php');
             const data = await response.json();
             
             const carrinhoContador = document.querySelector('.carrinho-contador');
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!produtoId) return;
 
             try {
+                // AUMENTAR QUANTIDADE
                 if (event.target.classList.contains('btn-aumentar')) {
                     const response = await fetch('./api/carrinho.php', {
                         method: 'PUT',
@@ -38,9 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     await processarResposta(response);
                 }
 
-                
+                // DIMINUIR QUANTIDADE
                 if (event.target.classList.contains('btn-diminuir')) {
-                    const response = await fetch('/api/carrinho.php', {
+                    const response = await fetch('./api/carrinho.php', {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     await processarResposta(response);
                 }
 
-                
+                // REMOVER ITEM
                 if (event.target.classList.contains('btn-remover')) {
                     const response = await fetch('./api/carrinho.php', {
                         method: 'DELETE',
