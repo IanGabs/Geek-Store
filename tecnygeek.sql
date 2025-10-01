@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/06/2025 às 04:21
+-- Tempo de geração: 01/10/2025 às 03:14
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -56,6 +56,13 @@ CREATE TABLE `pedidos` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Despejando dados para a tabela `pedidos`
+--
+
+INSERT INTO `pedidos` (`id`, `usuario_id`, `total`, `status`, `created_at`) VALUES
+(1, 4, 20.00, 'pendente', '2025-10-01 00:22:53');
+
 -- --------------------------------------------------------
 
 --
@@ -70,6 +77,13 @@ CREATE TABLE `pedido_itens` (
   `preco_unitario` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Despejando dados para a tabela `pedido_itens`
+--
+
+INSERT INTO `pedido_itens` (`id`, `pedido_id`, `produto_id`, `quantidade`, `preco_unitario`) VALUES
+(1, 1, 7, 1, 20.00);
+
 -- --------------------------------------------------------
 
 --
@@ -81,6 +95,7 @@ CREATE TABLE `produtos` (
   `nome` varchar(100) NOT NULL,
   `descricao` text DEFAULT NULL,
   `preco` decimal(10,2) NOT NULL,
+  `desconto` decimal(5,2) NOT NULL DEFAULT 0.00,
   `estoque` int(11) NOT NULL DEFAULT 0,
   `imagem` varchar(255) DEFAULT NULL,
   `categoria` varchar(50) DEFAULT NULL,
@@ -93,13 +108,15 @@ CREATE TABLE `produtos` (
 -- Despejando dados para a tabela `produtos`
 --
 
-INSERT INTO `produtos` (`id`, `nome`, `descricao`, `preco`, `estoque`, `imagem`, `categoria`, `destaque`, `created_at`, `updated_at`) VALUES
-(1, 'Pelúcia Phoenica - Epithet Erased', 'Pelúcia oficial de Epithet Erased', 79.90, 0, './imgs/Phoenica.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(2, 'Hollow Knight Mini Figures', 'Pequenos figurinos de Hollow Knight', 59.90, 0, './imgs/Hollow_Knight_figures-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(3, 'ENA Pop-Up', 'Camiseta de ENA', 109.90, 0, './imgs/Ena-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(4, 'Chaveiro Kinger', 'Chaveiro de Kinger de The Amazing Digital Circus', 99.90, 0, './imgs/Kinger-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(5, 'Figura Rimuru', 'Figurino de Rimuru', 119.90, 0, './imgs/Rimuru-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(6, 'Button Pin Bill Cipher', 'Pin do Bill Cipher', 74.90, 0, './imgs/Bill-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32');
+INSERT INTO `produtos` (`id`, `nome`, `descricao`, `preco`, `desconto`, `estoque`, `imagem`, `categoria`, `destaque`, `created_at`, `updated_at`) VALUES
+(1, 'Pelúcia Phoenica - Epithet Erased', 'Pelúcia oficial de Epithet Erased', 79.90, 0.00, 0, './imgs/Phoenica.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(2, 'Hollow Knight Mini Figures', 'Pequenos figurinos de Hollow Knight', 59.90, 0.00, 0, './imgs/Hollow_Knight_figures-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(3, 'ENA Pop-Up', 'Camiseta de ENA', 109.90, 0.00, 0, './imgs/Ena-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(4, 'Chaveiro Kinger', 'Chaveiro de Kinger de The Amazing Digital Circus', 99.90, 0.00, 0, './imgs/Kinger-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(5, 'Figura Rimuru', 'Figurino de Rimuru', 119.90, 0.00, 0, './imgs/Rimuru-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(6, 'Button Pin Bill Cipher', 'Pin do Bill Cipher', 74.90, 0.00, 0, './imgs/Bill-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
+(7, 'Pomni', 'a', 20.00, 0.00, 0, './imgs/Pomni.png', NULL, 0, '2025-09-30 22:46:55', '2025-09-30 22:46:55'),
+(9, 'a', 'a', 50.00, 30.00, 0, './imgs/Pomni.png', NULL, 0, '2025-10-01 00:48:30', '2025-10-01 00:48:30');
 
 -- --------------------------------------------------------
 
@@ -124,7 +141,9 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `session_id`, `tipo`, `created_at`, `updated_at`) VALUES
 (1, 'Administrador', 'admin@tecnygeek.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'admin', '2025-06-25 00:41:34', '2025-06-25 00:41:34'),
-(2, '', '', '', 'norgucr3jhgosraogsmnn8k24a', 'cliente', '2025-06-25 00:43:21', '2025-06-25 00:43:21');
+(2, '', '', '', 'norgucr3jhgosraogsmnn8k24a', 'cliente', '2025-06-25 00:43:21', '2025-06-25 00:43:21'),
+(3, '', 'durul8friksk22vg8fumsu7if4', '', 'durul8friksk22vg8fumsu7if4', 'cliente', '2025-09-30 22:32:05', '2025-09-30 22:32:05'),
+(4, 'Ian Gabriel', 'ianbielbia223@gmail.com', '$2y$10$WvWP4jhrzSs2teNwVvSlBOZkZsgiEWISolZy3sdZi/p/Erl.xN/Pe', NULL, 'cliente', '2025-09-30 23:21:00', '2025-09-30 23:21:00');
 
 --
 -- Índices para tabelas despejadas
@@ -174,31 +193,31 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `carrinho`
 --
 ALTER TABLE `carrinho`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `pedido_itens`
 --
 ALTER TABLE `pedido_itens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restrições para tabelas despejadas
