@@ -7,7 +7,16 @@ class Product {
     public function __construct() {
         $this->conn = Database::getInstance()->getConnection();
     }
-    
+
+    private function calcularPrecoComDesconto($produto) {
+        if (isset($produto['desconto']) && $produto['desconto'] > 0) {
+            $produto['preco_final'] = $produto['preco'] * (1 - ($produto['desconto'] / 100));
+        } else {
+            $produto['preco_final'] = $produto['preco'];
+        }
+        return $produto;
+    }
+
     public function getAllProducts() {
         $stmt = $this->conn->prepare("SELECT * FROM produtos ORDER BY id DESC");
         $stmt->execute();
@@ -15,7 +24,7 @@ class Product {
         
         $produtos = [];
         while ($row = $result->fetch_assoc()) {
-            $produtos[] = $row;
+            $produtos[] = $this->calcularPrecoComDesconto($row);
         }
         
         return $produtos;
@@ -29,7 +38,7 @@ class Product {
         
         $produtos = [];
         while ($row = $result->fetch_assoc()) {
-            $produtos[] = $row;
+            $produtos[] = $this->calcularPrecoComDesconto($row);
         }
         
         return $produtos;
@@ -42,15 +51,16 @@ class Product {
         $result = $stmt->get_result();
         
         if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
+            $produto = $result->fetch_assoc();
+            return $this->calcularPrecoComDesconto($produto);
         }
         
         return null;
     }
     
-    public function addProduct($nome, $descricao, $preco, $imagem) {
-        $stmt = $this->conn->prepare("INSERT INTO produtos (nome, descricao, preco, imagem) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssds", $nome, $descricao, $preco, $imagem);
+    public function addProduct($nome, $descricao, $preco, $imagem, $desconto = 0) {
+        $stmt = $this->conn->prepare("INSERT INTO produtos (nome, descricao, preco, imagem, desconto) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssdsd", $nome, $descricao, $preco, $imagem, $desconto);
         
         return $stmt->execute();
     }

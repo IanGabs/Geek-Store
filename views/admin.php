@@ -87,6 +87,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="desconto">Desconto (%):</label>
+                        <input type="number" id="desconto" name="desconto" step="0.01" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="form-group">
                         <label for="imagem">URL da Imagem:</label>
                         <input type="text" id="imagem" name="imagem" placeholder="./imgs/produto.png" required>
                     </div>

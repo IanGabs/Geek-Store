@@ -77,41 +77,46 @@ class Cart {
     }
     
     public function getItems() {
-        $usuario_id = $this->user->getUserId();
-        
-        $stmt = $this->conn->prepare("
-            SELECT c.*, p.nome, p.preco, p.imagem
-            FROM carrinho c
-            JOIN produtos p ON c.produto_id = p.id
-            WHERE c.usuario_id = ?
-        ");
-        $stmt->bind_param("i", $usuario_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $itens = [];
-        $total = 0;
-        
-        while ($row = $result->fetch_assoc()) {
-            $subtotal = $row['preco'] * $row['quantidade'];
-            $total += $subtotal;
-            
-            $itens[] = [
-                'id' => $row['id'],
-                'produto_id' => $row['produto_id'],
-                'quantidade' => $row['quantidade'],
-                'nome' => $row['nome'],
-                'preco' => $row['preco'],
-                'imagem' => $row['imagem'],
-                'subtotal' => $subtotal
-            ];
+    $usuario_id = $this->user->getUserId();
+    
+    $stmt = $this->conn->prepare("
+        SELECT c.*, p.nome, p.preco, p.imagem, p.desconto
+        FROM carrinho c
+        JOIN produtos p ON c.produto_id = p.id
+        WHERE c.usuario_id = ?
+    ");
+    $stmt->bind_param("i", $usuario_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $itens = [];
+    $total = 0;
+    
+    while ($row = $result->fetch_assoc()) {
+        $preco_final = $row['preco'];
+        if (isset($row['desconto']) && $row['desconto'] > 0) {
+            $preco_final = $row['preco'] * (1 - ($row['desconto'] / 100));
         }
+
+        $subtotal = $preco_final * $row['quantidade'];
+        $total += $subtotal;
         
-        return [
-            'itens' => $itens,
-            'total' => $total
+        $itens[] = [
+            'id' => $row['id'],
+            'produto_id' => $row['produto_id'],
+            'quantidade' => $row['quantidade'],
+            'nome' => $row['nome'],
+            'preco' => $preco_final,
+            'imagem' => $row['imagem'],
+            'subtotal' => $subtotal
         ];
     }
+    
+    return [
+        'itens' => $itens,
+        'total' => $total
+    ];
+}
     
     public function finalizarCompra() {
         $usuario_id = $this->user->getUserId();
