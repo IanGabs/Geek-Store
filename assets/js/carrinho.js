@@ -95,4 +95,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
     atualizarContador();
+
+    const btnFinalizar = document.getElementById('btn-finalizar');
+    if (btnFinalizar) {
+        btnFinalizar.addEventListener('click', async () => {
+            try {
+                const response = await fetch('./api/carrinho.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'finalizar' })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    mostrarNotificacao(data.message);
+                    setTimeout(() => {
+                        window.location.href = 'index.php';
+                    }, 2000);
+                } else {
+                    mostrarNotificacao(data.message, true);
+                    if (data.message.includes('login')) {
+                        setTimeout(() => {
+                            window.location.href = 'login.php';
+                        }, 2000);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarNotificacao('Erro ao finalizar compra!', true);
+            }
+        });
+    }
 });

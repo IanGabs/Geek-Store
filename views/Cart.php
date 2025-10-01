@@ -32,7 +32,11 @@
             <div class="resumo-carrinho">
                 <h2>Resumo do Pedido</h2>
                 <p>Total: R$ <?php echo number_format($total, 2, ',', '.'); ?></p>
-                <a href="#" class="btn-primary" onclick="alert('Funcionalidade de finalizar compra em desenvolvimento!'); return false;">Finalizar Compra</a>
+                <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                    <button id="btn-finalizar" class="btn-primary">Finalizar Compra</button>
+                <?php else: ?>
+                    <a href="login.php" class="btn-primary">Faça login para finalizar</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </section>

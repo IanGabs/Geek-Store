@@ -108,6 +108,30 @@ class CartController {
         ]);
     }
     
+    public function finalizar() {
+        header('Content-Type: application/json');
+
+        if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'É necessário fazer login para finalizar a compra'
+            ]);
+            return;
+        }
+
+        if ($this->cartModel->finalizarCompra()) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Compra finalizada com sucesso!'
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Erro ao finalizar compra'
+            ]);
+        }
+    }
+    
     private function loadView($view, $data = []) {
         extract($data);
         require_once __DIR__ . '/../views/' . $view . '.php';

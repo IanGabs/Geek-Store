@@ -6,7 +6,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
-        $controller->add();
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (isset($data['action']) && $data['action'] === 'finalizar') {
+            $controller->finalizar();
+        } else {
+            $controller->add();
+        }
         break;
     case 'PUT':
         $controller->update();

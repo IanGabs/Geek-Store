@@ -112,5 +112,55 @@ class Cart {
             'total' => $total
         ];
     }
+    
+    public function finalizarCompra() {
+        $usuario_id = $this->user->getUserId();
+        $carrinho = $this->getItems();
+
+        if (empty($carrinho['itens'])) {
+            return false;
+        }
+
+        try {
+            $this->conn->begin_transaction();
+
+            // Criar pedido
+            $stmt = $this->conn->prepare("
+                INSERT INTO pedidos (usuario_id, total, status) 
+                VALUES (?, ?, 'pendente')
+            ");
+            $stmt->bind_param("id", $usuario_id, $carrinho['total']);
+            $stmt->execute();
+            $pedido_id = $this->conn->insert_id;
+
+            // Inserir itens do pedido
+            $stmt = $this->conn->prepare("
+                INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario)
+                VALUES (?, ?, ?, ?)
+            ");
+
+            foreach ($carrinho['itens'] as $item) {
+                $stmt->bind_param("iiid", 
+                    $pedido_id, 
+                    $item['produto_id'], 
+                    $item['quantidade'],
+                    $item['preco']
+                );
+                $stmt->execute();
+            }
+
+            // Limpar carrinho
+            $stmt = $this->conn->prepare("DELETE FROM carrinho WHERE usuario_id = ?");
+            $stmt->bind_param("i", $usuario_id);
+            $stmt->execute();
+
+            $this->conn->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            return false;
+        }
+    }
 }
 ?>
