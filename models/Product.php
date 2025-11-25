@@ -58,9 +58,12 @@ class Product {
         return null;
     }
     
-    public function addProduct($nome, $descricao, $preco, $imagem, $desconto = 0) {
-        $stmt = $this->conn->prepare("INSERT INTO produtos (nome, descricao, preco, imagem, desconto) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdsd", $nome, $descricao, $preco, $imagem, $desconto);
+    // ATUALIZADO: Aceita o parâmetro $categoria
+    public function addProduct($nome, $descricao, $preco, $imagem, $desconto = 0, $categoria = '') {
+        
+        $stmt = $this->conn->prepare("INSERT INTO produtos (nome, descricao, preco, imagem, desconto, categoria) VALUES (?, ?, ?, ?, ?, ?)");
+        
+        $stmt->bind_param("ssdsds", $nome, $descricao, $preco, $imagem, $desconto, $categoria);
         
         return $stmt->execute();
     }

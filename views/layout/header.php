@@ -8,12 +8,16 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Adicionado para alinhar o texto de boas-vindas com os links da navegação */
         .nav-text span {
             color: white;
             font-weight: 500;
             padding: 8px 12px;
             display: inline-block;
+        }
+        /* Estilo para aba ativa */
+        .active-tab {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -38,7 +42,8 @@
                     <li class="nav-text"><span>Olá, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</span></li>
                     
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <li><a href="admin.php"><i class="fas fa-cog"></i> Admin</a></li>
+                        <li><a href="admin.php" class="<?php echo (!isset($_GET['page'])) ? 'active-tab' : ''; ?>"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                        <li><a href="admin.php?page=new" class="<?php echo (isset($_GET['page']) && $_GET['page'] === 'new') ? 'active-tab' : ''; ?>"><i class="fas fa-plus"></i> Novo Produto</a></li>
                     <?php endif; ?>
                     
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Sair</a></li>

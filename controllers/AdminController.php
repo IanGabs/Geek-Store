@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../models/Product.php';
 require_once __DIR__ . '/../models/Cart.php';
+require_once __DIR__ . '/../models/factories/ActionFigureFactory.php';
+require_once __DIR__ . '/../models/factories/PlushFactory.php';
+require_once __DIR__ . '/../models/factories/ClothingFactory.php';
+require_once __DIR__ . '/../models/factories/AccessoryFactory.php';
 require_once __DIR__ . '/../adapters/DataExporter.php';
 require_once __DIR__ . '/../adapters/JsonExporter.php';
 require_once __DIR__ . '/../adapters/CsvConverter.php';
@@ -17,55 +21,105 @@ class AdminController {
     }
     
     private function checkAuth() {
-        // Garante que a sessão está iniciada antes de verificar
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        // Se o utilizador não estiver logado ou não for admin, redireciona
         if (!isset($_SESSION['logged_in']) || $_SESSION['user_type'] !== 'admin') {
             header('Location: login.php');
             exit;
         }
     }
     
-    public function index() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->handleProductAction();
+    public function router() {
+        $page = $_GET['page'] ?? 'dashboard';
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'add') {
+            $this->store();
+            return;
+        } elseif ($action === 'delete') {
+            $this->delete();
+            return;
         }
-        
+
+        if ($page === 'new') {
+            $this->create();
+        } else {
+            $this->index();
+        }
+    }
+    
+    public function index() {
         $produtos = $this->productModel->getAllProducts();
         $totalItensCarrinho = $this->cartModel->getTotalItems();
         
         $data = [
             'produtos' => $produtos,
             'totalItensCarrinho' => $totalItensCarrinho,
-            'title' => 'Painel Admin - Tecny Geek Store',
+            'title' => 'Painel Admin - Dashboard',
             'user_name' => $_SESSION['user_name']
         ];
         
-        $this->loadView('admin', $data);
+        $this->loadView('admin/dashboard', $data);
+    }
+
+    public function create() {
+        $totalItensCarrinho = $this->cartModel->getTotalItems();
+        $data = [
+            'totalItensCarrinho' => $totalItensCarrinho,
+            'title' => 'Novo Produto - Admin',
+            'user_name' => $_SESSION['user_name']
+        ];
+        $this->loadView('admin/add_product', $data);
     }
     
-    private function handleProductAction() {
-        $action = $_POST['action'] ?? ''; 
-        if ($action === 'add') {
+    public function store() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $tipo = $_POST['tipo'] ?? '';
             $nome = $_POST['nome'] ?? '';
             $descricao = $_POST['descricao'] ?? '';
             $preco = floatval($_POST['preco'] ?? 0);
             $imagem = $_POST['imagem'] ?? '';
             $desconto = floatval($_POST['desconto'] ?? 0);
-        
-            if (!empty($nome) && !empty($descricao) && $preco > 0 && !empty($imagem)) {
-                $this->productModel->addProduct($nome, $descricao, $preco, $imagem, $desconto);
-                $_SESSION['admin_message'] = 'Produto adicionado com sucesso!';
-            } else {
-                $_SESSION['admin_error'] = 'Por favor, preencha todos os campos corretamente.';
+
+            $factory = null;
+
+            switch ($tipo) {
+                case 'figure': $factory = new ActionFigureFactory(); break;
+                case 'plush':  $factory = new PlushFactory(); break;
+                case 'clothing': $factory = new ClothingFactory(); break;
+                case 'accessory': $factory = new AccessoryFactory(); break;
+                default:
+                    $_SESSION['admin_error'] = 'Selecione um tipo de produto válido.';
+                    header('Location: admin.php?page=new');
+                    exit;
             }
-        } elseif ($action === 'delete') {
-            // ... (código de exclusão)
+
+            if ($factory) {
+                $produtoObj = $factory->createProduct($nome, $preco, $descricao);
+                
+                $categoriaAutomatica = $produtoObj->getCategoryName();
+
+                if (!empty($nome) && !empty($descricao) && $preco > 0 && !empty($imagem)) {
+                    $this->productModel->addProduct($nome, $descricao, $preco, $imagem, $desconto, $categoriaAutomatica);
+                    $_SESSION['admin_message'] = "Produto criado com sucesso! Categoria definida: $categoriaAutomatica";
+                    header('Location: admin.php');
+                } else {
+                    $_SESSION['admin_error'] = 'Preencha todos os campos corretamente.';
+                    header('Location: admin.php?page=new');
+                }
+            }
+            exit;
         }
-    
+    }
+
+    public function delete() {
+        $id = $_POST['product_id'] ?? 0;
+        if ($id > 0) {
+            $this->productModel->deleteProduct($id);
+            $_SESSION['admin_message'] = 'Produto removido com sucesso.';
+        }
         header('Location: admin.php');
         exit;
     }
@@ -80,15 +134,13 @@ class AdminController {
         $products = $this->productModel->getAllProducts();
         $exporter = null;
 
-        switch($format)
-        {
+        switch($format) {
             case 'csv':
                 $adaptee = new CsvConverter();
                 $exporter = new CsvAdapter($adaptee);
                 $contentType = 'text/csv';
                 $fileName = 'produtos.csv';
                 break;
-            
             case 'json':
             default:
                 $exporter = new JsonExporter();
