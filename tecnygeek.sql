@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 01/10/2025 às 03:14
+-- Tempo de geração: 26/11/2025 às 14:33
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -20,6 +20,30 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `tecnygeek`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `avaliacoes`
+--
+
+CREATE TABLE `avaliacoes` (
+  `id` int(11) NOT NULL,
+  `produto_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `nota` int(1) NOT NULL,
+  `comentario` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `sentimento` enum('positivo','negativo','neutro') DEFAULT 'neutro'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `avaliacoes`
+--
+
+INSERT INTO `avaliacoes` (`id`, `produto_id`, `usuario_id`, `nota`, `comentario`, `created_at`, `sentimento`) VALUES
+(1, 6, 6, 5, 'Achei muito legal esse produto! Veio certinho e bem bonito.', '2025-11-26 00:09:42', 'neutro'),
+(2, 6, 6, 5, 'Amei MUITO esse produto!', '2025-11-26 02:21:56', 'positivo');
 
 -- --------------------------------------------------------
 
@@ -115,8 +139,7 @@ INSERT INTO `produtos` (`id`, `nome`, `descricao`, `preco`, `desconto`, `estoque
 (4, 'Chaveiro Kinger', 'Chaveiro de Kinger de The Amazing Digital Circus', 99.90, 0.00, 0, './imgs/Kinger-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
 (5, 'Figura Rimuru', 'Figurino de Rimuru', 119.90, 0.00, 0, './imgs/Rimuru-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
 (6, 'Button Pin Bill Cipher', 'Pin do Bill Cipher', 74.90, 0.00, 0, './imgs/Bill-removebg-preview.png', NULL, 0, '2025-06-25 00:42:32', '2025-06-25 00:42:32'),
-(7, 'Pomni', 'a', 20.00, 0.00, 0, './imgs/Pomni.png', NULL, 0, '2025-09-30 22:46:55', '2025-09-30 22:46:55'),
-(9, 'a', 'a', 50.00, 30.00, 0, './imgs/Pomni.png', NULL, 0, '2025-10-01 00:48:30', '2025-10-01 00:48:30');
+(7, 'Pomni', 'a', 20.00, 0.00, 0, './imgs/Pomni.png', NULL, 0, '2025-09-30 22:46:55', '2025-09-30 22:46:55');
 
 -- --------------------------------------------------------
 
@@ -128,6 +151,7 @@ CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
   `senha` varchar(255) NOT NULL,
   `session_id` varchar(255) DEFAULT NULL,
   `tipo` enum('cliente','admin') DEFAULT 'cliente',
@@ -139,15 +163,25 @@ CREATE TABLE `usuarios` (
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `session_id`, `tipo`, `created_at`, `updated_at`) VALUES
-(1, 'Administrador', 'admin@tecnygeek.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'admin', '2025-06-25 00:41:34', '2025-06-25 00:41:34'),
-(2, '', '', '', 'norgucr3jhgosraogsmnn8k24a', 'cliente', '2025-06-25 00:43:21', '2025-06-25 00:43:21'),
-(3, '', 'durul8friksk22vg8fumsu7if4', '', 'durul8friksk22vg8fumsu7if4', 'cliente', '2025-09-30 22:32:05', '2025-09-30 22:32:05'),
-(4, 'Ian Gabriel', 'ianbielbia223@gmail.com', '$2y$10$WvWP4jhrzSs2teNwVvSlBOZkZsgiEWISolZy3sdZi/p/Erl.xN/Pe', NULL, 'cliente', '2025-09-30 23:21:00', '2025-09-30 23:21:00');
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `foto_perfil`, `senha`, `session_id`, `tipo`, `created_at`, `updated_at`) VALUES
+(1, 'Administrador', 'admin@tecnygeek.com', NULL, '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'admin', '2025-06-25 00:41:34', '2025-06-25 00:41:34'),
+(2, '', '', NULL, '', 'norgucr3jhgosraogsmnn8k24a', 'cliente', '2025-06-25 00:43:21', '2025-06-25 00:43:21'),
+(3, '', 'durul8friksk22vg8fumsu7if4', NULL, '', 'durul8friksk22vg8fumsu7if4', 'cliente', '2025-09-30 22:32:05', '2025-09-30 22:32:05'),
+(4, 'Ian Gabriel', 'ianbielbia223@gmail.com', NULL, '$2y$10$WvWP4jhrzSs2teNwVvSlBOZkZsgiEWISolZy3sdZi/p/Erl.xN/Pe', NULL, 'cliente', '2025-09-30 23:21:00', '2025-09-30 23:21:00'),
+(5, '', '846689l9grst1s9nadraedpm19', NULL, '', '846689l9grst1s9nadraedpm19', 'cliente', '2025-11-25 22:11:19', '2025-11-25 22:11:19'),
+(6, 'Teste', 'teste@gmail.com', './imgs/users/user_6_1764116953.png', '$2y$10$EB7f2ziR8rHh28H4ATW8tut1MiTgNRjjAJNaW2mxakUXOhxRk.eJG', NULL, 'cliente', '2025-11-25 22:45:22', '2025-11-26 00:29:13');
 
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `avaliacoes`
+--
+ALTER TABLE `avaliacoes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produto_id` (`produto_id`),
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- Índices de tabela `carrinho`
@@ -190,10 +224,16 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de tabela `avaliacoes`
+--
+ALTER TABLE `avaliacoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `carrinho`
 --
 ALTER TABLE `carrinho`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `pedidos`
@@ -217,11 +257,18 @@ ALTER TABLE `produtos`
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restrições para tabelas despejadas
 --
+
+--
+-- Restrições para tabelas `avaliacoes`
+--
+ALTER TABLE `avaliacoes`
+  ADD CONSTRAINT `avaliacoes_ibfk_1` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `avaliacoes_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `carrinho`
