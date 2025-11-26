@@ -8,10 +8,9 @@ class Review {
         $this->conn = Database::getInstance()->getConnection();
     }
     
-    public function createReview($produto_id, $usuario_id, $nota, $comentario) {
-        $stmt = $this->conn->prepare("INSERT INTO avaliacoes (produto_id, usuario_id, nota, comentario) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiis", $produto_id, $usuario_id, $nota, $comentario);
-        
+    public function createReview($produto_id, $usuario_id, $nota, $comentario, $sentimento) {
+        $stmt = $this->conn->prepare("INSERT INTO avaliacoes (produto_id, usuario_id, nota, comentario, sentimento) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iiiss", $produto_id, $usuario_id, $nota, $comentario, $sentimento);
         return $stmt->execute();
     }
     

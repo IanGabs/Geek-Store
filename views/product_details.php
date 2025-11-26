@@ -93,7 +93,32 @@
 
                         <div class="review-content">
                             <div class="review-header">
-                                <strong><?php echo htmlspecialchars($review['usuario_nome']); ?></strong>
+                                <div style="display:flex; align-items:center; gap: 10px;">
+                                    <strong><?php echo htmlspecialchars($review['usuario_nome']); ?></strong>
+        
+                                    <?php 
+                                    $icone = '😐'; // Padrão Neutro
+                                    $cor = '#95a5a6'; // Cinza
+                                    $texto_sentimento = 'Neutro';
+
+                                    if (isset($review['sentimento'])) {
+                                        if ($review['sentimento'] === 'positivo') {
+                                            $icone = '😊'; // Feliz
+                                            $cor = '#2ecc71'; // Verde
+                                            $texto_sentimento = 'Positivo';
+                                        } elseif ($review['sentimento'] === 'negativo') {
+                                            $icone = '😡'; // Bravo
+                                            $cor = '#e74c3c'; // Vermelho
+                                            $texto_sentimento = 'Negativo';
+                                        }
+                                    }
+                                    ?>
+                                    <span title="Análise de IA: <?php echo $texto_sentimento; ?>" 
+                                        style="font-size: 1.2rem; cursor: help; background: <?php echo $cor; ?>20; padding: 2px 6px; border-radius: 12px; border: 1px solid <?php echo $cor; ?>;">
+                                        <?php echo $icone; ?>
+                                    </span>
+                                </div>
+
                                 <div class="review-stars">
                                     <?php for($i=1; $i<=5; $i++) echo ($i <= $review['nota']) ? '★' : '☆'; ?>
                                 </div>
