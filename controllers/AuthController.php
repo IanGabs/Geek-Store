@@ -22,9 +22,11 @@ class AuthController {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['nome'];
                     $_SESSION['user_type'] = $user['tipo'];
+                    
+                    $_SESSION['user_photo'] = isset($user['foto_perfil']) ? $user['foto_perfil'] : null;
+                    
                     $_SESSION['logged_in'] = true;
                     
-                    // CORREÇÃO: Redireciona admin para admin.php
                     if ($user['tipo'] === 'admin') {
                         header('Location: admin.php');
                     } else {
@@ -87,7 +89,6 @@ class AuthController {
     private function loadView($view, $data = []) {
         extract($data);
         
-        // Adiciona uma verificação para o caminho da view de login, que está em um subdiretório
         $path = __DIR__ . '/../views/';
         if ($view === 'login') {
             $path .= 'layout/' . $view . '.php';

@@ -15,14 +15,14 @@
         <div class="admin-content-wrapper">
             <div class="form-header">
                 <h1><i class="fas fa-box-open"></i> Cadastrar Novo Produto</h1>
-                <p>Selecione o tipo e preencha os detalhes para fabricar um novo item.</p>
+                <p>Selecione o tipo e faça o upload da imagem do seu computador.</p>
             </div>
 
             <?php if (isset($_SESSION['admin_error'])): ?>
                 <div class="error-message"><?php echo $_SESSION['admin_error']; unset($_SESSION['admin_error']); ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="admin.php" class="modern-form">
+            <form method="POST" action="admin.php" class="modern-form" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="add">
 
                 <div class="form-section">
@@ -36,7 +36,7 @@
                             <option value="clothing">Vestuário (Roupas)</option>
                             <option value="accessory">Acessório (Chaveiro/Pin)</option>
                         </select>
-                        <small style="color: #666; margin-top: 5px; display: block;">Isso define a categoria automaticamente usando o padrão Factory.</small>
+                        <small style="color: #666; margin-top: 5px;">A categoria será definida automaticamente.</small>
                     </div>
                 </div>
 
@@ -60,10 +60,27 @@
                             <label for="desconto">Desconto (%):</label>
                             <input type="number" id="desconto" name="desconto" step="1" min="0" max="100" value="0" class="input-modern">
                         </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Imagem do Produto:</label>
                         
-                        <div class="form-group">
-                            <label for="imagem">URL da Imagem:</label>
-                            <input type="text" id="imagem" name="imagem" placeholder="./imgs/exemplo.png" required class="input-modern">
+                        <div class="custom-file-upload">
+                            <input type="file" id="imagem" name="imagem" accept="image/*" required onchange="previewImage(this)">
+                            <div class="upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Clique ou arraste a imagem aqui</span>
+                                <small>JPG, PNG, GIF ou WEBP</small>
+                            </div>
+                        </div>
+
+                        <div id="preview-container" class="image-preview-container">
+                            <p style="color: #666; margin-bottom: 10px;">Pré-visualização da Imagem:</p>
+                            <img id="image-preview" src="#" alt="Pré-visualização">
+                            <div class="file-info">
+                                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                                <span id="file-name">nome-do-arquivo.jpg</span>
+                            </div>
                         </div>
                     </div>
 
@@ -76,7 +93,7 @@
                 <div class="form-actions">
                     <a href="admin.php" class="btn-secondary">Cancelar</a>
                     <button type="submit" class="btn-primary btn-lg">
-                        <i class="fas fa-check-circle"></i> Fabricar e Salvar
+                        <i class="fas fa-upload"></i> Upload e Salvar
                     </button>
                 </div>
             </form>

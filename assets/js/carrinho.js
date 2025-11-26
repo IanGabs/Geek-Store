@@ -10,10 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (carrinhoContador) {
                 carrinhoContador.textContent = data.total_itens;
             }
-
-            if (data.total_itens === 0 && window.location.pathname.includes('carrinho.php')) {
-                location.reload();
-            }
         } catch (error) {
             console.error('Erro ao atualizar contador:', error);
         }
@@ -30,12 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.target.classList.contains('btn-aumentar')) {
                     const response = await fetch('./api/carrinho.php', {
                         method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ produto_id: produtoId, acao: 'aumentar' })
                     });
-                    
                     await processarResposta(response);
                 }
 
@@ -43,12 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.target.classList.contains('btn-diminuir')) {
                     const response = await fetch('./api/carrinho.php', {
                         method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ produto_id: produtoId, acao: 'diminuir' })
                     });
-                    
                     await processarResposta(response);
                 }
 
@@ -56,12 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.target.classList.contains('btn-remover')) {
                     const response = await fetch('./api/carrinho.php', {
                         method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ produto_id: produtoId })
                     });
-                    
                     await processarResposta(response);
                 }
             } catch (error) {
@@ -75,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
         
         if (data.status === 'success') {
+            // Aqui o reload é seguro, pois acontece APÓS uma ação do usuário (clique)
             location.reload();
         } else {
             mostrarNotificacao('Erro ao atualizar carrinho!', true);
@@ -94,17 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
             notificacao.remove();
         }, 3000);
     }
+
+    // Inicia a contagem ao carregar a página
     atualizarContador();
 
+    // Lógica do botão finalizar
     const btnFinalizar = document.getElementById('btn-finalizar');
     if (btnFinalizar) {
         btnFinalizar.addEventListener('click', async () => {
             try {
                 const response = await fetch('./api/carrinho.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'finalizar' })
                 });
 

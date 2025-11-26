@@ -80,8 +80,44 @@ class AdminController {
             $nome = $_POST['nome'] ?? '';
             $descricao = $_POST['descricao'] ?? '';
             $preco = floatval($_POST['preco'] ?? 0);
-            $imagem = $_POST['imagem'] ?? '';
             $desconto = floatval($_POST['desconto'] ?? 0);
+            
+            $imagemFinalPath = '';
+            
+            if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) 
+                {
+                $targetDir = __DIR__ . '/../imgs/';
+                
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0755, true);
+                }
+
+                $fileInfo = pathinfo($_FILES['imagem']['name']);
+                $extension = strtolower($fileInfo['extension']);
+                
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                
+                if (in_array($extension, $allowedExtensions)) {
+                    $newFileName = uniqid('prod_') . '.' . $extension;
+                    $targetFilePath = $targetDir . $newFileName;
+                    
+                    if (move_uploaded_file($_FILES['imagem']['tmp_name'], $targetFilePath)) {
+                        $imagemFinalPath = './imgs/' . $newFileName;
+                    } else {
+                        $_SESSION['admin_error'] = 'Falha ao salvar o arquivo no servidor.';
+                        header('Location: admin.php?page=new');
+                        exit;
+                    }
+                } else {
+                    $_SESSION['admin_error'] = 'Formato de imagem inválido. Use JPG, PNG, GIF ou WEBP.';
+                    header('Location: admin.php?page=new');
+                    exit;
+                }
+            } else {
+                $_SESSION['admin_error'] = 'Por favor, selecione uma imagem válida.';
+                header('Location: admin.php?page=new');
+                exit;
+            }
 
             $factory = null;
 
@@ -96,26 +132,30 @@ class AdminController {
                     exit;
             }
 
-            if ($factory) {
+            if ($factory && !empty($imagemFinalPath)) {
                 $produtoObj = $factory->createProduct($nome, $preco, $descricao);
-                
                 $categoriaAutomatica = $produtoObj->getCategoryName();
 
-                if (!empty($nome) && !empty($descricao) && $preco > 0 && !empty($imagem)) {
-                    $this->productModel->addProduct($nome, $descricao, $preco, $imagem, $desconto, $categoriaAutomatica);
-                    $_SESSION['admin_message'] = "Produto criado com sucesso! Categoria definida: $categoriaAutomatica";
+                if (!empty($nome) && $preco > 0) {
+                    $this->productModel->addProduct($nome, $descricao, $preco, $imagemFinalPath, $desconto, $categoriaAutomatica);
+                    $_SESSION['admin_message'] = "Produto criado com sucesso! Imagem enviada.";
                     header('Location: admin.php');
-                } else {
-                    $_SESSION['admin_error'] = 'Preencha todos os campos corretamente.';
-                    header('Location: admin.php?page=new');
+                    exit;
                 }
             }
+            
+            $_SESSION['admin_error'] = 'Preencha todos os campos corretamente.';
+            header('Location: admin.php?page=new');
             exit;
         }
     }
 
     public function delete() {
         $id = $_POST['product_id'] ?? 0;
+        
+        // $produto = $this->productModel->getProductById($id);
+        // if ($produto && file_exists(__DIR__ . '/../' . $produto['imagem'])) { unlink(...); }
+
         if ($id > 0) {
             $this->productModel->deleteProduct($id);
             $_SESSION['admin_message'] = 'Produto removido com sucesso.';
